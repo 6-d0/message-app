@@ -5,3 +5,17 @@ class MessageSerializer(serializers.ModelSerializer):
         model = Message
         fields = '__all__'
         read_only_fields = ['id', 'created_at', 'updated_at', 'sender']
+
+class MessageListSerializer(serializers.ModelSerializer):
+    sender = serializers.StringRelatedField()
+    conversation = serializers.StringRelatedField()
+
+    class Meta:
+        model = Message
+        fields = ['id', 'sender', 'conversation', 'content', 'created_at']
+        read_only_fields = ['id', 'created_at']
+
+    def create(self, validated_data):
+        message = Message(**validated_data)
+        message.save()
+        return message
