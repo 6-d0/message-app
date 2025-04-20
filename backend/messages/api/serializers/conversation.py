@@ -1,12 +1,17 @@
 from messages.api.models import CustomUser
+from messages.api.serializers.user import UserSerializer
 from rest_framework import serializers
 from messages.api.models import Conversation
 from django.db import models
 
 class ConversationSerializer(serializers.ModelSerializer):
     participants = serializers.PrimaryKeyRelatedField(
-        many=True, queryset=CustomUser.objects.all()
+        many=True, queryset=CustomUser.objects.all(), write_only=True
     )
+    participants_details = serializers.SerializerMethodField(read_only=True)
+
+    def get_participants_details(self, obj):
+        return UserSerializer(obj.participants, many=True).data
 
     class Meta:
         model = Conversation

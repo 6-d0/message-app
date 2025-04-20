@@ -26,3 +26,11 @@ class ConversationViews(CreateAPIView, ListAPIView):
 
     def get(self, request, *args, **kwargs):
         return super().get(request, *args, **kwargs)
+    
+class ConversationList(ListAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = ConversationSerializer
+    def get_queryset(self):
+        return Conversation.objects.filter(participants=self.request.user)
+    def get(self, request, *args, **kwargs):
+        return super().get(request, *args, **kwargs)
