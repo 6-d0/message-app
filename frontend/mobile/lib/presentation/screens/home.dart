@@ -22,7 +22,7 @@ class _HomeState extends State<Home> {
   void initState() {
     super.initState();
     filteredSuggestions = suggestions;
-    
+
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await Get.find<ConversationsController>().getConversations();
     });
@@ -44,118 +44,122 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Messenger'),
-        actions: [
-          IconButton.outlined(
-            icon: Icon(Icons.person),
-            onPressed: () {
-              Get.toNamed('/profile/');
-            },
-          ),
-        ],
-        elevation: 1,
-        bottomOpacity: 0.5,
-        bottom: PreferredSize(
-          preferredSize: Size.fromHeight(30.0),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 5),
-            child: GestureDetector(
-              onTap: () {
-                showModalBottomSheet(
-                  context: context,
-                  isScrollControlled: true,
-                  builder: (context) {
-                    return StatefulBuilder(
-                      builder: (context, setModalState) {
-                        return Padding(
-                          padding: EdgeInsets.only(
-                            top: 30,
-                          ),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.max,
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.symmetric(vertical: 10),
-                                child: Row(
-                                  children: [
-                                    IconButton(
-                                      icon: Icon(Icons.arrow_back, color: Colors.grey),
-                                      onPressed: () {
-                                        Navigator.pop(context);
-                                      },
-                                    ),
-                                    Expanded(
-                                      child: Container(
-                                        height: 40,
-                                        decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.circular(10),
-                                          border: Border.all(color: Colors.grey),
-                                        ),
-                                        child: TextField(
-                                          onChanged: (value) {
-                                            setModalState(() {
-                                              _filterSuggestions(value);
-                                            });
-                                          },
-                                          decoration: InputDecoration(
-                                            border: InputBorder.none,
-                                            prefixIcon: Icon(Icons.search, color: Colors.grey),
-                                            contentPadding: EdgeInsets.only(bottom: 5),
-                                            alignLabelWithHint: true
+          title: Text('Messenger'),
+          actions: [
+            IconButton.outlined(
+              icon: Icon(Icons.person),
+              onPressed: () {
+                Get.toNamed('/profile/');
+              },
+            ),
+          ],
+          elevation: 1,
+          bottomOpacity: 0.5,
+          bottom: PreferredSize(
+            preferredSize: Size.fromHeight(30.0),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 5),
+              child: GestureDetector(
+                onTap: () {
+                  showModalBottomSheet(
+                    context: context,
+                    isScrollControlled: true,
+                    builder: (context) {
+                      return StatefulBuilder(
+                        builder: (context, setModalState) {
+                          return Padding(
+                            padding: EdgeInsets.only(
+                              top: 30,
+                            ),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.max,
+                              children: [
+                                Padding(
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 10),
+                                  child: Row(
+                                    children: [
+                                      IconButton(
+                                        icon: Icon(Icons.arrow_back,
+                                            color: Colors.grey),
+                                        onPressed: () {
+                                          Navigator.pop(context);
+                                        },
+                                      ),
+                                      Expanded(
+                                        child: Container(
+                                          height: 40,
+                                          decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(10),
+                                            border:
+                                                Border.all(color: Colors.grey),
+                                          ),
+                                          child: TextField(
+                                            onChanged: (value) {
+                                              setModalState(() {
+                                                _filterSuggestions(value);
+                                              });
+                                            },
+                                            decoration: InputDecoration(
+                                                border: InputBorder.none,
+                                                prefixIcon: Icon(Icons.search,
+                                                    color: Colors.grey),
+                                                contentPadding:
+                                                    EdgeInsets.only(bottom: 5),
+                                                alignLabelWithHint: true),
                                           ),
                                         ),
                                       ),
-                                    ),
-                                  ],
+                                    ],
+                                  ),
                                 ),
-                              ),
-                              SizedBox(
-                                height: 300,
-                                child: ListView.builder(
-                                  shrinkWrap: true,
-                                  itemCount: filteredSuggestions.length,
-                                  itemBuilder: (context, index) {
-                                    return ListTile(
-                                      title: Text(filteredSuggestions[index]),
-                                      onTap: () {
-                                        Navigator.pop(context);
-                                      },
-                                    );
-                                  },
+                                SizedBox(
+                                  height: 300,
+                                  child: ListView.builder(
+                                    shrinkWrap: true,
+                                    itemCount: filteredSuggestions.length,
+                                    itemBuilder: (context, index) {
+                                      return ListTile(
+                                        title: Text(filteredSuggestions[index]),
+                                        onTap: () {
+                                          Navigator.pop(context);
+                                        },
+                                      );
+                                    },
+                                  ),
                                 ),
-                              ),
-                            ],
-                          ),
-                        );
-                      },
-                    );
-                  },
-                );
-              },
-              child: Container(
-                height: 40,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  border: Border.all(color: Colors.grey),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Row(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                      child: Icon(Icons.search, color: Colors.black),
-                    ),
-                    Text(
-                      'Rechercher...',
-                      style: TextStyle(color: Colors.grey),
-                    ),
-                  ],
+                              ],
+                            ),
+                          );
+                        },
+                      );
+                    },
+                  );
+                },
+                child: Container(
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    border: Border.all(color: Colors.grey),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Row(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                        child: Icon(Icons.search, color: Colors.black),
+                      ),
+                      Text(
+                        'Rechercher...',
+                        style: TextStyle(color: Colors.grey),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
-          ),
-        )
-      ),
+          )),
       body: Obx(() {
         final controller = Get.find<ConversationsController>();
         List<ConversationsModel> convs = controller.conversations;
@@ -167,7 +171,7 @@ class _HomeState extends State<Home> {
         }
 
         if (convs.isNotEmpty) {
-          final token = ApiService.instance.token; 
+          final token = ApiService.instance.token;
           _chatController.connect(convs[0].id, token);
         }
 
@@ -177,7 +181,7 @@ class _HomeState extends State<Home> {
               return ListTile(
                 title: Text('${convs[index].participants}'),
                 onTap: () {
-                  Get.to(() => ChatScreen(conversationId: convs[index].id));
+                  Get.to(() => ChatScreen(conversation: convs[index]));
                 },
               );
             },

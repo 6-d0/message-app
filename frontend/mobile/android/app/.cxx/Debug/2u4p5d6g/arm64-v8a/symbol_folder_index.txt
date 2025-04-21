@@ -1,0 +1,1 @@
+C:\Users\ltcai\Desktop\projects\chat\message-app\frontend\mobile\build\app\intermediates\cxx\Debug\2u4p5d6g\obj\arm64-v8a
