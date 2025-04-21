@@ -40,7 +40,17 @@ INSTALLED_APPS = [
     'messages.api',
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist',
+    'channels',
 ]
+
+CHANNEL_LAYERS = {
+    "default":{
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("127.0.0.1", 6379)],
+        },
+    }
+}
 
 from django.utils.timezone import timedelta
 SIMPLE_JWT = {
@@ -54,6 +64,7 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
 }
+ASGI_APPLICATION = 'messages.asgi.application'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

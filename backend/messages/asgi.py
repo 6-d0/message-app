@@ -1,16 +1,21 @@
-"""
-ASGI config for messages project.
-
-It exposes the ASGI callable as a module-level variable named ``application``.
-
-For more information on this file, see
-https://docs.djangoproject.com/en/5.2/howto/deployment/asgi/
-"""
-
 import os
-
+import django
 from django.core.asgi import get_asgi_application
+from channels.routing import ProtocolTypeRouter, URLRouter
 
+# Définir le module de configuration de Django
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'messages.settings')
 
-application = get_asgi_application()
+# Initialiser Django
+django.setup()
+
+# Maintenant que Django est configuré, importe ton middleware et autres composants
+from messages.middlewares.auth_middleware import JWTAuthMiddleware
+import messages.api.routing
+
+application = ProtocolTypeRouter({
+    "http": get_asgi_application(),
+    "websocket": JWTAuthMiddleware(
+        URLRouter(messages.api.routing.websocket_urlpatterns)
+    ),
+})
