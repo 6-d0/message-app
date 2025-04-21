@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:mobile/core/service/api_service.dart';
 import 'package:mobile/data/models/conversations.dart';
+import 'package:mobile/presentation/screens/chat.dart';
 import 'package:mobile/presentation/state_management/controllers/conversations_controller.dart';
+import 'package:mobile/presentation/state_management/controllers/chat_controller.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -12,16 +15,17 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   List<String> suggestions = [];
-
   List<String> filteredSuggestions = [];
+  final ChatController _chatController = Get.find<ChatController>();
 
   @override
   void initState() {
     super.initState();
     filteredSuggestions = suggestions;
+    
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await Get.find<ConversationsController>().getConversations();
-    },);
+    });
   }
 
   void _filterSuggestions(String query) {
@@ -155,20 +159,35 @@ class _HomeState extends State<Home> {
       body: Obx(() {
         final controller = Get.find<ConversationsController>();
         List<ConversationsModel> convs = controller.conversations;
-        if(controller.isLoading.value){
+        suggestions = convs.map((e) => e.participants.toString()).toList();
+        if (controller.isLoading.value) {
           return Center(
             child: CircularProgressIndicator(),
           );
         }
-        return ListView.builder(
-          itemBuilder: (context, index) {
-            return ListTile(
-              title: Text('${convs[index].participants}'),
-            );
+
+        if (convs.isNotEmpty) {
+          final token = ApiService.instance.token; 
+          _chatController.connect(convs[0].id, token);
+        }
+
+        return RefreshIndicator(
+          child: ListView.builder(
+            itemBuilder: (context, index) {
+              return ListTile(
+                title: Text('${convs[index].participants}'),
+                onTap: () {
+                  Get.to(() => ChatScreen(conversationId: convs[index].id));
+                },
+              );
+            },
+            itemCount: convs.length,
+          ),
+          onRefresh: () async {
+            return await controller.getConversations();
           },
-          itemCount: convs.length,
         );
-      },),
+      }),
       bottomNavigationBar: BottomNavigationBar(
         items: [
           BottomNavigationBarItem(

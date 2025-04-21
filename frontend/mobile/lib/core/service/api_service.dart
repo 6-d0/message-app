@@ -4,6 +4,7 @@ class ApiService {
   final Dio _dio = Dio();
   static String? baseurl;
   String? _jwtToken;
+  String get token => '$_jwtToken';
   bool get hasToken => _jwtToken != null;
   String? _refreshToken;
   static ApiService? _instance;
