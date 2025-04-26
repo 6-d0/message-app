@@ -47,7 +47,7 @@ CHANNEL_LAYERS = {
     "default":{
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [("192.168.0.102", 6379)],
+            "hosts": [("127.0.0.1", 6379)],
         },
     }
 }
@@ -94,7 +94,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'messages.wsgi.application'
-
+CHANNEL_CLOSE_TIMEOUT = 20
 
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases

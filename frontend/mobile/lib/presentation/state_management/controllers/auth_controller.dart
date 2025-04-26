@@ -5,12 +5,18 @@ class AuthController extends GetxController{
   AuthController({required this.loginUseCase});
   final LoginUseCase loginUseCase;
   var isLoading = RxBool(false);
+  String? username;
 
   Future<bool> login(String login, String password) async {
     isLoading.value = true;
     Get.log('caled');
     isLoading.value = false;
-    return await loginUseCase.call(login, password);
+    bool value = await loginUseCase.call(login, password);
+    if(value){
+      username = login;
+      return true;
+    }
+    return false;
   }
 
 }

@@ -8,6 +8,7 @@ import 'package:mobile/data/repository/messages_repository.dart';
 import 'package:mobile/domain/usecases/auth/login.dart';
 import 'package:mobile/domain/usecases/get_conversations.dart';
 import 'package:mobile/domain/usecases/get_messages.dart';
+import 'package:mobile/presentation/screens/chat.dart';
 import 'package:mobile/presentation/screens/home.dart';
 import 'package:mobile/presentation/screens/auth/login.dart';
 import 'package:mobile/presentation/state_management/controllers/auth_controller.dart';
@@ -33,6 +34,7 @@ class MainApp extends StatelessWidget {
     return GetMaterialApp(
       getPages: [
         GetPage(name: '/', page: Home.new),
+        GetPage(name: '/chat/', page: () => ChatScreen()),
         GetPage(name: '/auth/login/', page: LoginPage.new)
       ],
       initialRoute: initial,

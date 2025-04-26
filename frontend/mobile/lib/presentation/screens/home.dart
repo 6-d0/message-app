@@ -170,18 +170,14 @@ class _HomeState extends State<Home> {
           );
         }
 
-        if (convs.isNotEmpty) {
-          final token = ApiService.instance.token;
-          _chatController.connect(convs[0].id, token);
-        }
-
         return RefreshIndicator(
           child: ListView.builder(
             itemBuilder: (context, index) {
               return ListTile(
                 title: Text('${convs[index].participants}'),
                 onTap: () {
-                  Get.to(() => ChatScreen(conversation: convs[index]));
+                  Get.toNamed('/chat/',
+                      arguments: convs[index]);
                 },
               );
             },

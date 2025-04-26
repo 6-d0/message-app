@@ -5,13 +5,11 @@ import 'package:mobile/data/models/conversations.dart';
 import 'package:mobile/presentation/state_management/controllers/chat_controller.dart';
 
 class ChatScreen extends StatefulWidget {
-  final ConversationsModel conversation;
 
-  const ChatScreen({
+  ChatScreen({
     super.key,
-    required this.conversation,
   });
-
+  final ConversationsModel conversation = Get.arguments;
   @override
   State<ChatScreen> createState() => _ChatScreenState();
 }
