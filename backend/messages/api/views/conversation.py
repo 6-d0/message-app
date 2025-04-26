@@ -25,7 +25,10 @@ class ConversationViews(CreateAPIView, ListAPIView):
             return Response(serializer.errors, status=400)
 
     def get(self, request, *args, **kwargs):
-        return super().get(request, *args, **kwargs)
+        # Récupérer les conversations de l'utilisateur authentifié triés par date de denrier message
+        conversations = Conversation.objects.filter(participants=request.user).order_by('-messages__created_at')
+        serializer = ConversationSerializer(conversations, many=True)
+        return Response(serializer.data, status=200)    
     
 class ConversationList(ListAPIView):
     permission_classes = [IsAuthenticated]

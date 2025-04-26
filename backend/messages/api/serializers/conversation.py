@@ -9,9 +9,27 @@ class ConversationSerializer(serializers.ModelSerializer):
         many=True, queryset=CustomUser.objects.all(), write_only=True
     )
     participants_details = serializers.SerializerMethodField(read_only=True)
+    last_message = serializers.SerializerMethodField(read_only=True)
+    last_message_sender = serializers.SerializerMethodField(read_only=True)
+    last_message_time = serializers.SerializerMethodField(read_only=True)  # Converti en SerializerMethodField
 
     def get_participants_details(self, obj):
         return UserSerializer(obj.participants, many=True).data
+
+    def get_last_message_time(self, obj):
+        # Récupérer le dernier message de la conversation
+        last_message = obj.messages.order_by('-created_at').first()
+        return last_message.created_at if last_message else None
+
+    def get_last_message(self, obj):
+        # Récupérer le dernier message de la conversation
+        last_message = obj.messages.order_by('-created_at').first()
+        return last_message.content if last_message else None
+
+    def get_last_message_sender(self, obj):
+        # Récupérer l'expéditeur du dernier message
+        last_message = obj.messages.order_by('-created_at').first()
+        return last_message.sender.username if last_message else None
 
     class Meta:
         model = Conversation

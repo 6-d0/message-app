@@ -11,6 +11,7 @@ import 'package:mobile/domain/usecases/get_messages.dart';
 import 'package:mobile/presentation/screens/chat.dart';
 import 'package:mobile/presentation/screens/home.dart';
 import 'package:mobile/presentation/screens/auth/login.dart';
+import 'package:mobile/presentation/screens/profile.dart';
 import 'package:mobile/presentation/state_management/controllers/auth_controller.dart';
 import 'package:mobile/presentation/state_management/controllers/chat_controller.dart';
 import 'package:mobile/presentation/state_management/controllers/conversations_controller.dart';
@@ -35,7 +36,8 @@ class MainApp extends StatelessWidget {
       getPages: [
         GetPage(name: '/', page: Home.new),
         GetPage(name: '/chat/', page: () => ChatScreen()),
-        GetPage(name: '/auth/login/', page: LoginPage.new)
+        GetPage(name: '/auth/login/', page: LoginPage.new),
+        GetPage(name: '/profile/', page: () => Profile()),
       ],
       initialRoute: initial,
     );

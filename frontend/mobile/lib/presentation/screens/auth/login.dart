@@ -9,55 +9,120 @@ class LoginPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Login'),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            TextField(
-              controller: _usernameController,
-              keyboardType: TextInputType.emailAddress,
-              decoration: InputDecoration(
-                labelText: "Nom d'utilisateur",
-                border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.email),
+      body: Stack(
+        children: [
+          
+          Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Colors.blueAccent, Colors.lightBlue],
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
               ),
             ),
-            SizedBox(height: 16),
-            TextField(
-              controller: _passwordController,
-              obscureText: true,
-              decoration: InputDecoration(
-                labelText: 'Mot de passe',
-                border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.lock),
-              ),
-            ),
-            SizedBox(height: 24),
-            ElevatedButton(
-              onPressed: () async {
-                final username = _usernameController.text;
-                final password = _passwordController.text;
+          ),
+          Center(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 24.0),
+              child: Card(
+                elevation: 8,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(24.0),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      
+                      Text(
+                        'Bienvenue',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 28,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.blueAccent,
+                        ),
+                      ),
+                      SizedBox(height: 16),
+                      
+                      TextField(
+                        controller: _usernameController,
+                        keyboardType: TextInputType.emailAddress,
+                        decoration: InputDecoration(
+                          labelText: "Nom d'utilisateur",
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          prefixIcon: Icon(Icons.person),
+                          filled: true,
+                          fillColor: Colors.grey[200],
+                        ),
+                      ),
+                      SizedBox(height: 16),
+                      
+                      TextField(
+                        controller: _passwordController,
+                        obscureText: true,
+                        decoration: InputDecoration(
+                          labelText: 'Mot de passe',
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          prefixIcon: Icon(Icons.lock),
+                          filled: true,
+                          fillColor: Colors.grey[200],
+                        ),
+                      ),
+                      SizedBox(height: 24),
+                      
+                      ElevatedButton(
+                        onPressed: () async {
+                          final username = _usernameController.text;
+                          final password = _passwordController.text;
 
-                if (username.isNotEmpty && password.isNotEmpty) {
-                  bool success = await Get.find<AuthController>().login(username, password);
-                  if(success){
-                    Get.offAndToNamed('/');
-                  }else{
-                    Get.snackbar('Auth failed', 'Failed to log in');
-                  }
-                } else {
-                  Get.snackbar('Erreur', 'Veuillez remplir toutes les informations');
-                }
-              },
-              child: Text('Se connecter'),
+                          if (username.isNotEmpty && password.isNotEmpty) {
+                            bool success = await Get.find<AuthController>().login(username, password);
+                            if (success) {
+                              Get.offAndToNamed('/');
+                            } else {
+                              Get.snackbar('Échec de connexion', 'Nom d\'utilisateur ou mot de passe incorrect');
+                            }
+                          } else {
+                            Get.snackbar('Erreur', 'Veuillez remplir toutes les informations');
+                          }
+                        },
+                        style: ElevatedButton.styleFrom(
+                          padding: EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          backgroundColor: Colors.blueAccent,
+                        ),
+                        child: Text(
+                          'Se connecter',
+                          style: TextStyle(fontSize: 16),
+                        ),
+                      ),
+                      SizedBox(height: 16),
+                      
+                      TextButton(
+                        onPressed: () {
+                          Get.toNamed('/register');
+                        },
+                        child: Text(
+                          'Créer un compte',
+                          style: TextStyle(color: Colors.blueAccent),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

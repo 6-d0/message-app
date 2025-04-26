@@ -16,5 +16,5 @@ class ParticipantModel {
   }
 
   @override
-  String toString() => '$lastName $firstName ($username)';
+  String toString() => username;
 }

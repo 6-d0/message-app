@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mobile/core/service/api_service.dart';
-import 'package:mobile/data/models/conversations.dart';
-import 'package:mobile/presentation/screens/chat.dart';
 import 'package:mobile/presentation/state_management/controllers/conversations_controller.dart';
 import 'package:mobile/presentation/state_management/controllers/chat_controller.dart';
 
@@ -14,189 +12,148 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  List<String> suggestions = [];
-  List<String> filteredSuggestions = [];
-  final ChatController _chatController = Get.find<ChatController>();
+  final TextEditingController _searchController = TextEditingController();
+  String _searchQuery = '';
 
   @override
   void initState() {
     super.initState();
-    filteredSuggestions = suggestions;
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      await Get.find<ConversationsController>().getConversations();
+      final conversationsController = Get.find<ConversationsController>();
+      final chatController = Get.find<ChatController>();
+      await conversationsController.getConversations();
+
+      chatController.initGlobalChat(ApiService.instance.token);
     });
   }
 
-  void _filterSuggestions(String query) {
+  void _onSearchChanged(String query) {
     setState(() {
-      if (query.isEmpty) {
-        filteredSuggestions = suggestions;
-      } else {
-        filteredSuggestions = suggestions
-            .where((item) => item.toLowerCase().contains(query.toLowerCase()))
-            .toList();
-      }
+      _searchQuery = query.toLowerCase();
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    final conversationsController = Get.find<ConversationsController>();
+
     return Scaffold(
       appBar: AppBar(
-          title: Text('Messenger'),
-          actions: [
-            IconButton.outlined(
-              icon: Icon(Icons.person),
-              onPressed: () {
-                Get.toNamed('/profile/');
-              },
+        title: Text('Messenger'),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.person),
+            onPressed: () {
+              Get.toNamed('/profile/');
+            },
+          ),
+        ],
+        backgroundColor: Colors.blueAccent,
+      ),
+      body: Column(
+        children: [
+          
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: TextField(
+              controller: _searchController,
+              onChanged: _onSearchChanged,
+              decoration: InputDecoration(
+                hintText: 'Rechercher une conversation...',
+                prefixIcon: Icon(Icons.search),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                filled: true,
+                fillColor: Colors.grey[200],
+              ),
             ),
-          ],
-          elevation: 1,
-          bottomOpacity: 0.5,
-          bottom: PreferredSize(
-            preferredSize: Size.fromHeight(30.0),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 5),
-              child: GestureDetector(
-                onTap: () {
-                  showModalBottomSheet(
-                    context: context,
-                    isScrollControlled: true,
-                    builder: (context) {
-                      return StatefulBuilder(
-                        builder: (context, setModalState) {
-                          return Padding(
-                            padding: EdgeInsets.only(
-                              top: 30,
-                            ),
-                            child: Column(
-                              mainAxisSize: MainAxisSize.max,
-                              children: [
-                                Padding(
-                                  padding:
-                                      const EdgeInsets.symmetric(vertical: 10),
-                                  child: Row(
-                                    children: [
-                                      IconButton(
-                                        icon: Icon(Icons.arrow_back,
-                                            color: Colors.grey),
-                                        onPressed: () {
-                                          Navigator.pop(context);
-                                        },
-                                      ),
-                                      Expanded(
-                                        child: Container(
-                                          height: 40,
-                                          decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(10),
-                                            border:
-                                                Border.all(color: Colors.grey),
-                                          ),
-                                          child: TextField(
-                                            onChanged: (value) {
-                                              setModalState(() {
-                                                _filterSuggestions(value);
-                                              });
-                                            },
-                                            decoration: InputDecoration(
-                                                border: InputBorder.none,
-                                                prefixIcon: Icon(Icons.search,
-                                                    color: Colors.grey),
-                                                contentPadding:
-                                                    EdgeInsets.only(bottom: 5),
-                                                alignLabelWithHint: true),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                SizedBox(
-                                  height: 300,
-                                  child: ListView.builder(
-                                    shrinkWrap: true,
-                                    itemCount: filteredSuggestions.length,
-                                    itemBuilder: (context, index) {
-                                      return ListTile(
-                                        title: Text(filteredSuggestions[index]),
-                                        onTap: () {
-                                          Navigator.pop(context);
-                                        },
-                                      );
-                                    },
-                                  ),
-                                ),
-                              ],
-                            ),
-                          );
-                        },
-                      );
-                    },
-                  );
-                },
-                child: Container(
-                  height: 40,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    border: Border.all(color: Colors.grey),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Row(
+          ),
+          Expanded(
+            child: Obx(() {
+              final conversations = conversationsController.conversations;
+
+              if (conversationsController.isLoading.value) {
+                return Center(
+                  child: CircularProgressIndicator(),
+                );
+              }
+
+              if (conversations.isEmpty) {
+                return Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                        child: Icon(Icons.search, color: Colors.black),
-                      ),
+                      Icon(Icons.chat_bubble_outline, size: 50, color: Colors.grey),
+                      SizedBox(height: 10),
                       Text(
-                        'Rechercher...',
-                        style: TextStyle(color: Colors.grey),
+                        'Aucune conversation disponible.',
+                        style: TextStyle(color: Colors.grey, fontSize: 16),
                       ),
                     ],
                   ),
-                ),
-              ),
-            ),
-          )),
-      body: Obx(() {
-        final controller = Get.find<ConversationsController>();
-        List<ConversationsModel> convs = controller.conversations;
-        suggestions = convs.map((e) => e.participants.toString()).toList();
-        if (controller.isLoading.value) {
-          return Center(
-            child: CircularProgressIndicator(),
-          );
-        }
+                );
+              }
 
-        return RefreshIndicator(
-          child: ListView.builder(
-            itemBuilder: (context, index) {
-              return ListTile(
-                title: Text('${convs[index].participants}'),
-                onTap: () {
-                  Get.toNamed('/chat/',
-                      arguments: convs[index]);
+              
+              final filteredConversations = conversations.where((conversation) {
+                final participants = conversation.participants.join(", ").toLowerCase();
+                final lastMessage = conversation.lastMessage.toLowerCase();
+                return participants.contains(_searchQuery) || lastMessage.contains(_searchQuery);
+              }).toList();
+
+              return RefreshIndicator(
+                onRefresh: () async {
+                  return await conversationsController.getConversations();
                 },
+                child: ListView.builder(
+                  itemCount: filteredConversations.length,
+                  itemBuilder: (context, index) {
+                    final conversation = filteredConversations[index];
+
+                    return ListTile(
+                      leading: CircleAvatar(
+                        backgroundColor: Colors.blueAccent,
+                        child: Text(
+                          conversation.participants[0].toString().toUpperCase()[0],
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ),
+                      title: Text(
+                        conversation.participants.join(", "),
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      subtitle: Text(
+                        conversation.lastMessage,
+                        style: TextStyle(color: Colors.grey),
+                      ),
+                      onTap: () {
+                        Get.toNamed('/chat/', arguments: conversation);
+                      },
+                    );
+                  },
+                ),
               );
-            },
-            itemCount: convs.length,
+            }),
           ),
-          onRefresh: () async {
-            return await controller.getConversations();
-          },
-        );
-      }),
+        ],
+      ),
       bottomNavigationBar: BottomNavigationBar(
+        currentIndex: 0,
+        onTap: (index) {
+          if (index == 1) {
+            Get.toNamed('/settings/');
+          }
+        },
         items: [
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
-            label: 'Home',
+            label: 'Accueil',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.settings),
-            label: 'Settings',
+            label: 'Paramètres',
           ),
         ],
       ),
